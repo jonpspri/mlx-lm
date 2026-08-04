@@ -706,10 +706,7 @@ def mtp_generate_step(
     s_min_keep = getattr(sampler, "min_tokens_to_keep", 1) or 1
     s_xtc = getattr(sampler, "xtc_probability", 0.0) or 0.0
     use_residual = (
-        s_temp is not None
-        and s_temp > 0.0
-        and s_xtc == 0.0
-        and not logits_processors
+        s_temp is not None and s_temp > 0.0 and s_xtc == 0.0 and not logits_processors
     )
 
     def _probs(logits):
@@ -802,17 +799,15 @@ def mtp_generate_step(
             # the emitted token is distributed exactly as the target's p.
             mx.eval(draft_token, q, p)
             x = draft_token.item()
-            accepted = mx.random.uniform().item() < min(
-                1.0, (p[0, x] / q[0, x]).item()
-            )
+            accepted = mx.random.uniform().item() < min(1.0, (p[0, x] / q[0, x]).item())
             if accepted:
                 emit_token = draft_token
             else:
                 residual = mx.maximum(p - q, 0.0)
                 if residual.sum().item() > 0.0:
-                    emit_token = mx.random.categorical(
-                        mx.log(residual + 1e-20)
-                    ).astype(mx.uint32)
+                    emit_token = mx.random.categorical(mx.log(residual + 1e-20)).astype(
+                        mx.uint32
+                    )
                 else:  # p already dominated by q everywhere (degenerate)
                     emit_token, _ = _sample(tgt_logits)
                 mx.eval(emit_token)

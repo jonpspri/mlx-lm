@@ -43,6 +43,7 @@ def make_sampler(
         Callable[mx.array, mx.array]:
             A sampler which takes log-probabilities and returns tokens.
     """
+
     def _tag(fn):
         # Expose the sampling parameters on the returned callable so consumers
         # that need the processed distribution itself (e.g. the residual

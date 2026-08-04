@@ -348,7 +348,7 @@ class Model(nn.Module):
             mtp_src = f"model.layers.{n_layers}."
             for k in list(weights.keys()):
                 if k.startswith(mtp_src):
-                    rest = k[len(mtp_src):]
+                    rest = k[len(mtp_src) :]
                     if any(
                         t in rest
                         for t in ("enorm", "hnorm", "eh_proj", "final_layernorm")
